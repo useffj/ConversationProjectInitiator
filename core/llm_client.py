@@ -11,7 +11,8 @@ def _get_model(model_name: str) -> genai.GenerativeModel:
     if not key:
         st.error(
             "⚠️ **Google API key not found.** "
-            "Copy `.env.example` to `.env` and set `GOOGLE_API_KEY`."
+            "Set `GOOGLE_API_KEY` in your Streamlit Cloud secrets (cloud) "
+            "or copy `.env.example` to `.env` and set it there (local)."
         )
         st.stop()
     genai.configure(api_key=key)
