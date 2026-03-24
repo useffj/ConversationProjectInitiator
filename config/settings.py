@@ -17,7 +17,16 @@ def _get_secret(key: str, default: str = "") -> str:
     return os.getenv(key, default)
 
 
-GOOGLE_API_KEY: str = _get_secret("GOOGLE_API_KEY")
+def get_google_api_key() -> str:
+    """
+    Resolve the Google API key at call-time (not at import time) so that
+    st.secrets is fully initialised by Streamlit before we read it.
+    Priority: Streamlit Cloud secrets → .env / OS environment.
+    """
+    return _get_secret("GOOGLE_API_KEY")
+
+
+# Static config values — safe to resolve at import time (no secrets needed)
 GOOGLE_MODEL: str = _get_secret("GOOGLE_MODEL", "gemini-1.5-flash")
 MAX_TOKENS: int = int(_get_secret("MAX_TOKENS", "2000"))
 TEMPERATURE: float = float(_get_secret("TEMPERATURE", "0.7"))

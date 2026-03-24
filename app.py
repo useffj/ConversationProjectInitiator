@@ -15,7 +15,7 @@ load_dotenv()
 
 import streamlit as st
 
-from config.settings import APP_TITLE, APP_SUBTITLE, GOOGLE_API_KEY
+from config.settings import APP_TITLE, APP_SUBTITLE, get_google_api_key
 from core.session_manager import init_session_state, INTERVIEW_QUESTIONS
 from phases.phase1_interview import render_phase1
 from phases.phase2_synthesis import render_phase2
@@ -100,13 +100,20 @@ def _render_welcome() -> None:
         """
         This application requires a Google AI Studio API key to function.
 
-        **Setup steps:**
-        1. Copy `.env.example` to `.env` in the project root.
-        2. Add your key:  `GOOGLE_API_KEY=...`
-        3. Restart the Streamlit server: `streamlit run app.py`
+        **Streamlit Cloud deployment:**
+        1. Open your app's settings → **Secrets**.
+        2. Add the following and click **Save**:
+           ```toml
+           GOOGLE_API_KEY = "your-google-ai-studio-key"
+           ```
+        3. The app will restart automatically.
 
-        > Your key is loaded at startup via `python-dotenv` and is **never** logged or transmitted
-        > beyond the official Google Generative AI API endpoint.
+        **Local development:**
+        1. Copy `.env.example` to `.env` in the project root.
+        2. Add your key: `GOOGLE_API_KEY=your-google-ai-studio-key`
+        3. Restart the server: `streamlit run app.py`
+
+        > Your key is **never** logged or transmitted beyond the official Google Generative AI API endpoint.
         """
     )
 
@@ -116,7 +123,7 @@ def _render_welcome() -> None:
 def main() -> None:
     init_session_state()
 
-    if not GOOGLE_API_KEY:
+    if not get_google_api_key():
         _render_welcome()
         return
 

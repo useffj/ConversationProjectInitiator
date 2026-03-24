@@ -3,11 +3,11 @@ from __future__ import annotations
 import streamlit as st
 import google.generativeai as genai
 
-from config.settings import GOOGLE_API_KEY, GOOGLE_MODEL, MAX_TOKENS, TEMPERATURE
+from config.settings import get_google_api_key, GOOGLE_MODEL, MAX_TOKENS, TEMPERATURE
 
 
 def _get_model(model_name: str) -> genai.GenerativeModel:
-    key = GOOGLE_API_KEY
+    key = get_google_api_key()
     if not key:
         st.error(
             "⚠️ **Google API key not found.** "
