@@ -265,15 +265,15 @@ def render_phase1() -> None:
         col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
         with col2:
             submitted = st.form_submit_button(
-                "Submit →", use_container_width=True, type="primary"
+                "Submit →", width="stretch", type="primary"
             )
         with col3:
             next_question = st.form_submit_button(
-                "Next Question", use_container_width=True, type="secondary"
+                "Next Question", width="stretch", type="secondary"
             )
         with col4:
             skipped = st.form_submit_button(
-                "Skip ⏭", use_container_width=True, type="secondary"
+                "Skip ⏭", width="stretch", type="secondary"
             )
 
     if next_question:
@@ -365,10 +365,10 @@ def render_phase1() -> None:
         )
         col_save, col_reset = st.columns(2)
         with col_save:
-            if st.button("💾 Save Refined Answer", type="primary", use_container_width=True):
+            if st.button("💾 Save Refined Answer", type="primary", width="stretch"):
                 st.session_state.ai_feedback[q["id"]] = edited_refined.strip() or default_refined
                 st.success("Refined answer updated.")
         with col_reset:
-            if st.button("↺ Reset to Last Saved", use_container_width=True):
+            if st.button("↺ Reset to Last Saved", width="stretch"):
                 st.session_state[editor_key] = st.session_state.ai_feedback[q["id"]]
                 st.rerun()

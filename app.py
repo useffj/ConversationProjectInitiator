@@ -82,7 +82,7 @@ def _render_sidebar() -> None:
 
         # Reset
         st.divider()
-        if st.button("🔄 Start New Project", use_container_width=True):
+        if st.button("🔄 Start New Project", width="stretch"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()

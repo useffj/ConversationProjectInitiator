@@ -158,14 +158,14 @@ def render_phase2() -> None:
         if st.button(
             "✅ Approve Charter & Continue →",
             type="primary",
-            use_container_width=True,
+            width="stretch",
         ):
             st.session_state.is_charter_complete = True
             st.session_state.phase = 3
             st.rerun()
 
     with col2:
-        if st.button("🔄 Regenerate", use_container_width=True):
+        if st.button("🔄 Regenerate", width="stretch"):
             st.session_state.charter_markdown = ""
             st.rerun()
 
@@ -175,7 +175,7 @@ def render_phase2() -> None:
             data=markdown_to_docx_bytes(st.session_state.charter_markdown),
             file_name="project_charter.docx",
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            use_container_width=True,
+            width="stretch",
         )
 
     with col4:
@@ -184,7 +184,7 @@ def render_phase2() -> None:
             data=markdown_to_pdf_bytes(st.session_state.charter_markdown),
             file_name="project_charter.pdf",
             mime="application/pdf",
-            use_container_width=True,
+            width="stretch",
         )
 
     # ── Manual edit expander ──────────────────────────────────────────────────
