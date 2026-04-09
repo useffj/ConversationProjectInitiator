@@ -153,7 +153,7 @@ The app will open at `http://localhost:8501`.
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `GOOGLE_API_KEY` | ✅ | — | Your Google AI Studio key |
-| `GOOGLE_MODEL` | ❌ | `gemini-1.5-flash` | Model name override |
+| `GOOGLE_MODEL` | ❌ | `gemini-2.5-flash` | Model name override |
 | `MAX_TOKENS` | ❌ | `2000` | Maximum tokens per completion |
 | `TEMPERATURE` | ❌ | `0.7` | Sampling temperature (0 = deterministic) |
 

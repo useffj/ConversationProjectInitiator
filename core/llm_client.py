@@ -40,6 +40,33 @@ def _messages_to_prompt(messages: list[dict]) -> str:
     return "\n\n".join(chunks)
 
 
+def _stop_with_llm_error(exc: Exception, model_name: str) -> None:
+    """Surface Gemini errors in the UI instead of crashing the Streamlit app."""
+    raw_message = str(exc).strip() or exc.__class__.__name__
+    lower_message = raw_message.lower()
+
+    hints: list[str] = []
+    if any(token in lower_message for token in ("404", "not found", "unsupported", "unknown model")):
+        hints.append(
+            "Set `GOOGLE_MODEL` to a currently available Gemini Developer API model, "
+            "such as `gemini-2.5-flash`."
+        )
+    if any(token in lower_message for token in ("403", "permission", "api key", "unauthorized")):
+        hints.append(
+            "Verify that your `GOOGLE_API_KEY` secret is valid for Google AI Studio "
+            "and available in the current deployment."
+        )
+
+    hint_text = f"\n\n{hints[0]}" if hints else ""
+    st.error(
+        "⚠️ **Google Gemini request failed.**\n\n"
+        f"Model: `{model_name}`\n\n"
+        f"Details: {raw_message}"
+        f"{hint_text}"
+    )
+    st.stop()
+
+
 def chat_completion(
     messages: list[dict],
     model: str = GOOGLE_MODEL,
@@ -49,24 +76,27 @@ def chat_completion(
     """Blocking chat completion — returns the full response string."""
     prompt = _messages_to_prompt(messages)
     llm = _get_model(model)
-    if _USE_NEW_GENAI:
-        response = llm.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=temperature,
-                max_output_tokens=max_tokens,
-            ),
-        )
-    else:
-        response = llm.generate_content(
-            prompt,
-            generation_config={
-                "temperature": temperature,
-                "max_output_tokens": max_tokens,
-            },
-        )
-    return response.text or ""
+    try:
+        if _USE_NEW_GENAI:
+            response = llm.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=max_tokens,
+                ),
+            )
+        else:
+            response = llm.generate_content(
+                prompt,
+                generation_config={
+                    "temperature": temperature,
+                    "max_output_tokens": max_tokens,
+                },
+            )
+        return response.text or ""
+    except Exception as exc:
+        _stop_with_llm_error(exc, model)
 
 
 def stream_completion(
@@ -78,25 +108,28 @@ def stream_completion(
     """Streaming chat completion — yields text chunks as they arrive."""
     prompt = _messages_to_prompt(messages)
     llm = _get_model(model)
-    if _USE_NEW_GENAI:
-        stream = llm.models.generate_content_stream(
-            model=model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=temperature,
-                max_output_tokens=max_tokens,
-            ),
-        )
-    else:
-        stream = llm.generate_content(
-            prompt,
-            generation_config={
-                "temperature": temperature,
-                "max_output_tokens": max_tokens,
-            },
-            stream=True,
-        )
-    for chunk in stream:
-        delta = getattr(chunk, "text", None)
-        if delta:
-            yield delta
+    try:
+        if _USE_NEW_GENAI:
+            stream = llm.models.generate_content_stream(
+                model=model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=max_tokens,
+                ),
+            )
+        else:
+            stream = llm.generate_content(
+                prompt,
+                generation_config={
+                    "temperature": temperature,
+                    "max_output_tokens": max_tokens,
+                },
+                stream=True,
+            )
+        for chunk in stream:
+            delta = getattr(chunk, "text", None)
+            if delta:
+                yield delta
+    except Exception as exc:
+        _stop_with_llm_error(exc, model)

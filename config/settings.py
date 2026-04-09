@@ -27,7 +27,7 @@ def get_google_api_key() -> str:
 
 
 # Static config values — safe to resolve at import time (no secrets needed)
-GOOGLE_MODEL: str = _get_secret("GOOGLE_MODEL", "gemini-1.5-flash")
+GOOGLE_MODEL: str = _get_secret("GOOGLE_MODEL", "gemini-2.5-flash")
 MAX_TOKENS: int = int(_get_secret("MAX_TOKENS", "2000"))
 TEMPERATURE: float = float(_get_secret("TEMPERATURE", "0.7"))
 
